@@ -77,7 +77,7 @@ shinyServer(function(input, output) {
   output$resultat_provefiske_map <- renderLeaflet({
     
     # select species 
-    loc_arter <- location_arter[loc_arter$art==input$Resultat_provefiske_velgArt,]
+    loc_arter <- location_arter[location_arter$art==input$Resultat_provefiske_velgArt,]
    
      # select variable to display as colour palette on map
     if (input$Resultat_provefiske_velgVariabel=="CPUE") loc_arter$displayVar <- loc_arter$CPUE
