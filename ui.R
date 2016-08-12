@@ -17,55 +17,55 @@ tabPanel("Lokaliteter",
       
       # Sidebar with a slider input for number of observations
       sidebarPanel(
-        h3("Prøvefiskedata TOFA / Trondheim kommmune"),
-        p("Disse sidene er foreløbig eksperimentelle. Formålet er å vise fram og demonstrere endepunkt 
-          i dataflyt med prøvefiskedata i Trondheim kommune som eksempel.
-          Teknisk sett er sidene generiske og oppdateres kontinuerlig
-          ved oppdatering av data."),
-        p(),
-        p("Dataene som vises her er et eksempel, og er et resultat av prøvefiske sommer 2014 med formål og overvåke artssammensetning 
-          i et utvalg vann i Bymarka og er utført av Trondheim kommune i sammarbeid med Trondheim og Omeng 
-          Fiskeadministrasjon (TOFA)(?)."),
-        p(),
-        p("Kontakt: Anders G. Finstad (anders.finstad@ntnu.no)"),
-        
+        includeMarkdown("text_TrondheimProvefiske_Lokaliteter.md"),
         img(src="ntnu-vm.png", width = 100)
         ),
-
       
-      # Show a plot of the generated distribution
+      # Show map of locations 
       mainPanel(
-        leafletOutput("mymap"),
+        leafletOutput("locationmap"),
         p(),
         p("Kart viser lokaliteter for utført prøvefiske. Klikk på markøren for 
           å se navn på vatn.")
       )
     )), # End page
 
-### second page                    
-tabPanel("Arts-sammensetning",
+### second page: Resultat_provefiske                   
+tabPanel("Resultat prøvefiske",
          pageWithSidebar(
            
            # Application title
-           headerPanel("Arter"),
+           headerPanel("Fangst, lengde og vekt for ulike arter"),
            
            # Sidebar with a slider input for number of observations
            sidebarPanel(
-             h3("Hvor er ulike arter observert"),
-             p("Velg art nedenfor"),
-             selectInput("varIII", 
+             includeMarkdown("text_Resultat_provefiske.md"),
+             selectInput("Resultat_provefiske_velgArt", 
                          label = "Velg art",
                          choices = unique(as.character(location_arter$art)),
                          selected = unique(as.character(location_arter$art))[1]),
+             selectInput("Resultat_provefiske_velgVariabel", 
+                         label = "Velg observasjonstype",
+                         choices = c("Fangst per innssats"="CPUE",
+                                     "Vekt per innsats"="WPUE",
+                                     "Gjennomsnitt lengde"="gj_lengde_mm",
+                                     "Gjennomsnitt vekt" = "gj_vekt_g",
+                                     "Max lengde" = "max_lengde_mm",
+                                     "Max vekt" = "max_vekt_g"),
+                         selected = c("Fangst per innssats"="CPUE")
+                         ),
+
              img(src="ntnu-vm.png", width = 100)
            ),
            
            
            # Show a plot of the generated distribution
            mainPanel(
-             leafletOutput("mymapII"),
+             leafletOutput("resultat_provefiske_map"),
              p(),
-             p("Kart viser lokaliteter for artsobservasjoner")
+             p("Kart viser observasjonsverdier per lokalitet for valgt art. 
+               Merk at når art er observert på lokaliteten, men ønsket observasjonstype 
+               ikke er tilgjengelig vises denne i grått (NA = No Attribute)")
            )
          )), # End page
 

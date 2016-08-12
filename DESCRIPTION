@@ -2,6 +2,6 @@ Title: ProvefiskeTrondheim
 Author: Anders G. Finstad
 AuthorUrl: http://www.rstudio.com/
 License: The Unlicense
-DisplayMode: Showcase
+DisplayMode:
 Tags: DwC
 Type: Shiny

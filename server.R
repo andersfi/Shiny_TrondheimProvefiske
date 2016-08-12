@@ -48,15 +48,63 @@ shinyServer(function(input, output) {
   }
   ,rownames= FALSE))
   
+  # render location map
+  # first create location map popup
+  location$popup <- paste0("<strong>",location$waterBody,"</strong>",
+                                 "<br><i>vatn_lnr: </i>",location$waterBodyID,
+                                 "<br><i>Prøvefisket dato:</i>",location$dato)
   
-  output$mymap <- renderLeaflet({
+  output$locationmap <- renderLeaflet({
     loc<-location
-    leaflet(loc) %>% addTiles() %>% addMarkers(lng = ~decimalLongitude, lat = ~decimalLatitude, popup = location$waterBody)
+    leaflet(loc) %>% addTiles() %>% addMarkers(lng = ~decimalLongitude, lat = ~decimalLatitude, popup = loc$popup)
   })
+  
+  
+  
+  
+  # render species map
+  # first create species map popup
+  location_arter$popup <- paste0("<strong>",location_arter$waterBody,"- ",location_arter$art,"</strong>",
+                                 "<br><i>CPUE: </i>",location_arter$CPUE,
+                                 "<br><i>WPUE: </i>",location_arter$WPUE,
+                                 "<br><i>gj.lengde_mm:</i>",location_arter$gj_lengde_mm,
+                                 "<br><i>gj.vekt_g:</i>",location_arter$gj_vekt_g,
+                                 "<br><i>Max.vekt_g:</i>",location_arter$max_vekt_g,
+                                 "<br><i>Max.lengde_mm:</i>",location_arter$max_lengde_mm
+                                 )
+  
+  # Resultat_provefiske_map
+  output$resultat_provefiske_map <- renderLeaflet({
+    
+    # select species 
+    loc_arter <- location_arter[loc_arter$art==input$Resultat_provefiske_velgArt,]
+   
+     # select variable to display as colour palette on map
+    if (input$Resultat_provefiske_velgVariabel=="CPUE") loc_arter$displayVar <- loc_arter$CPUE
+    if (input$Resultat_provefiske_velgVariabel=="WPUE") loc_arter$displayVar <- loc_arter$WPUE
+    if (input$Resultat_provefiske_velgVariabel=="gj_lengde_mm") loc_arter$displayVar <- loc_arter$gj_lengde_mm
+    if (input$Resultat_provefiske_velgVariabel=="gj_vekt_g") loc_arter$displayVar <- loc_arter$gj_vekt_g
+    if (input$Resultat_provefiske_velgVariabel=="max_lengde_mm") loc_arter$displayVar <- loc_arter$max_lengde_mm
+    if (input$Resultat_provefiske_velgVariabel=="max_vekt_g") loc_arter$displayVar <- loc_arter$max_vekt_g
 
-  output$mymapII <- renderLeaflet({
-    loc_arter <- location_arter
-    leaflet(loc_arter[loc_arter$art==input$varIII,]) %>% addTiles() %>% addMarkers(lng = ~decimalLongitude, lat = ~decimalLatitude, popup = location$waterBody)
+    # create colour palett 
+    pal <- colorNumeric(
+      palette = c("blue", "red"),
+      domain = loc_arter$displayVar
+    )
+    
+    leaflet(loc_arter) %>% 
+      addTiles() %>% 
+      addCircleMarkers(lng = ~decimalLongitude, lat = ~decimalLatitude, popup = loc_arter$popup, 
+                       color = ~pal(displayVar),stroke = FALSE, fillOpacity = 0.9
+                       ) %>%
+      addLegend("bottomright", pal = pal, values = ~displayVar,title = input$Resultat_provefiske_velgVariabel,labFormat = labelFormat(prefix = ""),
+                opacity = 1
+      )
+    
      })
 
 })
+
+
+
